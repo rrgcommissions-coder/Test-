@@ -1,0 +1,27 @@
+{
+  "name": "Your Name",
+  "title": "Designer and developer",
+  "tagline": "I build clear, fast websites and the tools behind them.",
+  "about": "Write a few sentences about who you are and the kind of work you do.\n\nA second paragraph can cover what you're doing now or what you're looking for.",
+  "email": "you@example.com",
+  "accent": "#2f5bea",
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/your-username" },
+    { "label": "LinkedIn", "url": "https://www.linkedin.com/in/your-username" }
+  ],
+  "skills": ["HTML", "CSS", "JavaScript", "Python", "UI design"],
+  "projects": [
+    {
+      "title": "Project one",
+      "description": "A short description of what it is, who it's for and what you did.",
+      "url": "https://github.com/your-username/project-one",
+      "tags": ["JavaScript", "Web app"]
+    },
+    {
+      "title": "Project two",
+      "description": "Describe the problem you solved and the result.",
+      "url": "https://github.com/your-username/project-two",
+      "tags": ["Python", "Automation"]
+    }
+  ]
+}

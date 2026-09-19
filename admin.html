@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Edit portfolio</title>
+<style>
+  :root {
+    --bg: #eef1f6; --panel: #ffffff; --ink: #14213d; --muted: #525f78; --line: #c9d1df;
+    --accent: #2f5bea; --on-accent: #ffffff; --danger: #b3261e; --ok: #1b6e3c;
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0e1526; --panel: #16203a; --ink: #e7ebf5; --muted: #95a1bb; --line: #2a3654;
+      --accent: #7b98ff; --on-accent: #0e1526; --danger: #ff8a80; --ok: #7fd9a0;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 1rem/1.5 var(--font); }
+  .page { max-width: 760px; margin: 0 auto; padding: 2rem 1.25rem 7rem; }
+  h1 { font-size: 1.75rem; margin: 0 0 0.25rem; letter-spacing: -0.02em; }
+  h2 { font-size: 1.1rem; margin: 0 0 1rem; }
+  .lede, .hint { color: var(--muted); margin: 0 0 1.25rem; font-size: 0.95rem; }
+  .hint { margin-bottom: 1rem; }
+  section {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    padding: 1.25rem; margin-top: 1.25rem;
+  }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem 1rem; }
+  @media (max-width: 560px) { .grid2 { grid-template-columns: 1fr; } }
+  .field { display: block; margin-bottom: 0.75rem; }
+  .field > span { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; }
+  input[type=text], input[type=password], input[type=email], input[type=url], textarea {
+    width: 100%; font: inherit; color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: 0.55rem 0.7rem;
+  }
+  textarea { resize: vertical; min-height: 5rem; }
+  input[type=color] { width: 3.5rem; height: 2.4rem; padding: 0.15rem; border: 1px solid var(--line); border-radius: 6px; background: var(--bg); }
+  input:focus-visible, textarea:focus-visible, button:focus-visible, a:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .check { display: flex; gap: 0.5rem; align-items: center; font-size: 0.95rem; margin: 0.25rem 0 1rem; }
+
+  button, .btn {
+    font: inherit; font-weight: 600; cursor: pointer; border-radius: 6px; padding: 0.55rem 1rem;
+    border: 1px solid var(--line); background: var(--panel); color: var(--ink); text-decoration: none; display: inline-block;
+  }
+  button:hover, .btn:hover { border-color: var(--muted); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  button.small { padding: 0.3rem 0.65rem; font-size: 0.85rem; font-weight: 500; }
+  button.danger { color: var(--danger); }
+  button:disabled { opacity: 0.6; cursor: progress; }
+
+  .row { display: grid; grid-template-columns: 1fr 2fr auto; gap: 0.75rem; align-items: end; margin-bottom: 0.5rem; }
+  .row .field { margin: 0; }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } }
+  .item { border: 1px solid var(--line); border-radius: 8px; padding: 1rem; margin-bottom: 0.9rem; }
+  .item-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; gap: 0.5rem; }
+  .item-head strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .item-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+  .empty { color: var(--muted); font-size: 0.95rem; margin: 0 0 0.75rem; }
+
+  .bar {
+    position: fixed; left: 0; right: 0; bottom: 0; background: var(--panel); border-top: 1px solid var(--line);
+    padding: 0.75rem 1.25rem;
+  }
+  .bar-inner { max-width: 760px; margin: 0 auto; display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+  #status { flex: 1 1 14rem; font-size: 0.925rem; min-height: 1.4em; }
+  #status.error { color: var(--danger); }
+  #status.ok { color: var(--ok); }
+  #status.busy { color: var(--muted); }
+</style>
+</head>
+<body>
+<main class="page">
+  <h1>Edit portfolio</h1>
+  <p class="lede">Your changes are saved to <code>data.json</code> in your GitHub repository. Your site updates about a minute after you save.</p>
+
+  <section>
+    <h2>GitHub connection</h2>
+    <p class="hint">
+      Create a token at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">github.com/settings/personal-access-tokens/new</a>.
+      Give it access to this one repository only, and set <em>Contents</em> to <em>Read and write</em>.
+      The token is sent only to api.github.com.
+    </p>
+    <div class="grid2">
+      <label class="field"><span>GitHub username</span><input type="text" id="owner" autocomplete="off" spellcheck="false"></label>
+      <label class="field"><span>Repository name</span><input type="text" id="repo" autocomplete="off" spellcheck="false"></label>
+      <label class="field"><span>Branch</span><input type="text" id="branch" value="main" autocomplete="off" spellcheck="false"></label>
+      <label class="field"><span>Access token</span><input type="password" id="token" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></label>
+    </div>
+    <label class="check"><input type="checkbox" id="remember"> Remember these details on this device</label>
+    <button type="button" id="reload">Reload from GitHub</button>
+  </section>
+
+  <section>
+    <h2>Basics</h2>
+    <div class="grid2">
+      <label class="field"><span>Name</span><input type="text" data-k="name"></label>
+      <label class="field"><span>Job title</span><input type="text" data-k="title"></label>
+    </div>
+    <label class="field"><span>Tagline</span><input type="text" data-k="tagline"></label>
+    <div class="grid2">
+      <label class="field"><span>Email</span><input type="email" data-k="email"></label>
+      <label class="field"><span>Accent colour</span><input type="color" data-k="accent"></label>
+    </div>
+  </section>
+
+  <section>
+    <h2>About</h2>
+    <label class="field"><span>Leave a blank line between paragraphs</span><textarea data-k="about" rows="6"></textarea></label>
+  </section>
+
+  <section>
+    <h2>Links</h2>
+    <div id="links"></div>
+    <button type="button" id="addLink">Add link</button>
+  </section>
+
+  <section>
+    <h2>Projects</h2>
+    <div id="projects"></div>
+    <button type="button" id="addProject">Add project</button>
+  </section>
+
+  <section>
+    <h2>Skills</h2>
+    <label class="field"><span>Separate skills with commas</span><input type="text" id="skills"></label>
+  </section>
+</main>
+
+<div class="bar">
+  <div class="bar-inner">
+    <div id="status" role="status" aria-live="polite"></div>
+    <a class="btn" href="./" target="_blank" rel="noopener">View site</a>
+    <button type="button" id="download">Download data.json</button>
+    <button type="button" id="save" class="primary">Save to GitHub</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = s => document.querySelector(s);
+  const STORE = 'portfolio-admin-connection';
+  const EMPTY = { name: '', title: '', tagline: '', about: '', email: '', accent: '#2f5bea', links: [], skills: [], projects: [] };
+
+  let data = normalize({});
+  let dirty = false;
+
+  // ---------- helpers ----------
+  const h = (tag, attrs = {}, ...kids) => {
+    const e = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
+      else if (k === 'class') e.className = v;
+      else e.setAttribute(k, v);
+    }
+    kids.flat().forEach(c => {
+      if (c == null || c === false) return;
+      e.append(c instanceof Node ? c : document.createTextNode(c));
+    });
+    return e;
+  };
+  const csv = s => s.split(',').map(x => x.trim()).filter(Boolean);
+  const toB64 = s => { let bin = ''; new TextEncoder().encode(s).forEach(b => bin += String.fromCharCode(b)); return btoa(bin); };
+  const fromB64 = b => new TextDecoder().decode(Uint8Array.from(atob(b.replace(/\s/g, '')), c => c.charCodeAt(0)));
+
+  function status(msg, kind) {
+    const s = $('#status');
+    s.textContent = msg || '';
+    s.className = kind || '';
+  }
+  function markDirty() { dirty = true; }
+  window.addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
+
+  function normalize(d) {
+    d = d && typeof d === 'object' ? d : {};
+    return {
+      ...EMPTY, ...d,
+      accent: /^#[0-9a-f]{6}$/i.test(d.accent || '') ? d.accent : EMPTY.accent,
+      links: (Array.isArray(d.links) ? d.links : []).map(l => ({ label: '', url: '', ...l })),
+      skills: Array.isArray(d.skills) ? d.skills : [],
+      projects: (Array.isArray(d.projects) ? d.projects : []).map(p => ({ title: '', description: '', url: '', tags: [], ...p, tags: Array.isArray(p.tags) ? p.tags : [] }))
+    };
+  }
+  function clean() {
+    const t = v => (v || '').trim();
+    return {
+      name: t(data.name), title: t(data.title), tagline: t(data.tagline), about: t(data.about),
+      email: t(data.email), accent: data.accent,
+      links: data.links.map(l => ({ label: t(l.label), url: t(l.url) })).filter(l => l.url),
+      skills: data.skills.map(t).filter(Boolean),
+      projects: data.projects.filter(p => t(p.title)).map(p => ({
+        title: t(p.title), description: t(p.description), url: t(p.url), tags: p.tags.map(t).filter(Boolean)
+      }))
+    };
+  }
+
+  // ---------- connection ----------
+  function guessRepo() {
+    const host = location.hostname;
+    if (!host.endsWith('.github.io')) return { owner: '', repo: '' };
+    const owner = host.split('.')[0];
+    const seg = location.pathname.split('/').filter(Boolean)[0];
+    const repo = seg && !seg.includes('.') ? seg : owner + '.github.io';
+    return { owner, repo };
+  }
+  function loadConn() {
+    try { return JSON.parse(localStorage.getItem(STORE)) || {}; } catch (e) { return {}; }
+  }
+  function saveConn(c) {
+    try {
+      if ($('#remember').checked) localStorage.setItem(STORE, JSON.stringify(c));
+      else localStorage.removeItem(STORE);
+    } catch (e) { /* storage unavailable */ }
+  }
+  function conn() {
+    return {
+      owner: $('#owner').value.trim(), repo: $('#repo').value.trim(),
+      branch: $('#branch').value.trim() || 'main', token: $('#token').value.trim()
+    };
+  }
+  function apiUrl(c) {
+    return `https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/data.json`;
+  }
+  function apiHeaders(c) {
+    const hd = { Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+    if (c.token) hd.Authorization = 'Bearer ' + c.token;
+    return hd;
+  }
+  async function apiError(r) {
+    let m = '';
+    try { m = (await r.json()).message; } catch (e) { /* ignore */ }
+    if (r.status === 401) return 'GitHub rejected the token. Check it is correct and has not expired.';
+    if (r.status === 403 || r.status === 404) return "GitHub can't access that repository. Check the username, repository and branch, and that the token has Contents: Read and write access to it.";
+    if (r.status === 409 || r.status === 422) return 'GitHub refused the update because the file changed. Click "Reload from GitHub" and try again.';
+    return `GitHub error ${r.status}${m ? ': ' + m : ''}`;
+  }
+  // Returns { sha, content } or null if data.json doesn't exist yet.
+  async function ghGet(c) {
+    const r = await fetch(`${apiUrl(c)}?ref=${encodeURIComponent(c.branch)}&t=${Date.now()}`, { headers: apiHeaders(c), cache: 'no-store' });
+    if (r.status === 404) return null;
+    if (!r.ok) throw new Error(await apiError(r));
+    const j = await r.json();
+    return { sha: j.sha, content: fromB64(j.content) };
+  }
+  function needConn(c, needToken) {
+    if (!c.owner || !c.repo) return 'Enter your GitHub username and repository name.';
+    if (needToken && !c.token) return 'Enter your access token to save.';
+    return '';
+  }
+
+  // ---------- editor rendering ----------
+  function field(label, value, set, opts = {}) {
+    const input = h(opts.multiline ? 'textarea' : 'input', {
+      type: opts.multiline ? null : (opts.type || 'text'), rows: opts.multiline ? 3 : null, placeholder: opts.ph || null
+    });
+    input.value = value || '';
+    input.addEventListener('input', () => { set(input.value); markDirty(); });
+    return h('label', { class: 'field' }, h('span', {}, label), input);
+  }
+  function swap(arr, i, j) {
+    if (j < 0 || j >= arr.length) return;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+    markDirty(); renderLists();
+  }
+
+  function renderLinks() {
+    const box = $('#links');
+    box.replaceChildren();
+    if (!data.links.length) box.append(h('p', { class: 'empty' }, 'No links yet.'));
+    data.links.forEach((l, i) => {
+      box.append(h('div', { class: 'row' },
+        field('Label', l.label, v => l.label = v, { ph: 'GitHub' }),
+        field('Address', l.url, v => l.url = v, { type: 'url', ph: 'https://github.com/your-username' }),
+        h('button', { type: 'button', class: 'small danger', onclick: () => { data.links.splice(i, 1); markDirty(); renderLists(); } }, 'Remove')
+      ));
+    });
+  }
+  function renderProjects() {
+    const box = $('#projects');
+    box.replaceChildren();
+    if (!data.projects.length) box.append(h('p', { class: 'empty' }, 'No projects yet.'));
+    data.projects.forEach((p, i) => {
+      const heading = h('strong', {}, p.title || 'Untitled project');
+      box.append(h('div', { class: 'item' },
+        h('div', { class: 'item-head' }, heading,
+          h('div', { class: 'item-actions' },
+            h('button', { type: 'button', class: 'small', 'aria-label': 'Move project up', onclick: () => swap(data.projects, i, i - 1) }, 'Up'),
+            h('button', { type: 'button', class: 'small', 'aria-label': 'Move project down', onclick: () => swap(data.projects, i, i + 1) }, 'Down'),
+            h('button', { type: 'button', class: 'small danger', onclick: () => {
+              if (confirm('Remove this project?')) { data.projects.splice(i, 1); markDirty(); renderLists(); }
+            } }, 'Remove'))),
+        field('Title', p.title, v => { p.title = v; heading.textContent = v || 'Untitled project'; }),
+        field('Address', p.url, v => p.url = v, { type: 'url', ph: 'https://…' }),
+        field('Description', p.description, v => p.description = v, { multiline: true }),
+        field('Tags (separate with commas)', p.tags.join(', '), v => p.tags = csv(v))
+      ));
+    });
+  }
+  function renderLists() { renderLinks(); renderProjects(); }
+
+  function populate() {
+    document.querySelectorAll('[data-k]').forEach(i => { i.value = data[i.dataset.k] || ''; });
+    $('#skills').value = data.skills.join(', ');
+    renderLists();
+  }
+
+  // ---------- actions ----------
+  document.querySelectorAll('[data-k]').forEach(i => i.addEventListener('input', () => { data[i.dataset.k] = i.value; markDirty(); }));
+  $('#skills').addEventListener('input', e => { data.skills = csv(e.target.value); markDirty(); });
+  $('#addLink').addEventListener('click', () => { data.links.push({ label: '', url: '' }); markDirty(); renderLinks(); });
+  $('#addProject').addEventListener('click', () => { data.projects.push({ title: '', description: '', url: '', tags: [] }); markDirty(); renderProjects(); });
+
+  $('#download').addEventListener('click', () => {
+    const blob = new Blob([JSON.stringify(clean(), null, 2) + '\n'], { type: 'application/json' });
+    const a = h('a', { href: URL.createObjectURL(blob), download: 'data.json' });
+    document.body.append(a); a.click(); a.remove();
+    status('Downloaded data.json. Upload it to your repository to publish the change.', 'ok');
+  });
+
+  $('#reload').addEventListener('click', async () => {
+    const c = conn(), problem = needConn(c, false);
+    if (problem) return status(problem, 'error');
+    if (dirty && !confirm('Discard your unsaved changes and reload from GitHub?')) return;
+    status('Loading from GitHub…', 'busy');
+    try {
+      const file = await ghGet(c);
+      if (!file) return status('data.json was not found in that repository and branch.', 'error');
+      data = normalize(JSON.parse(file.content));
+      dirty = false; populate();
+      status('Loaded the latest data.json from GitHub.', 'ok');
+    } catch (e) { status(e.message, 'error'); }
+  });
+
+  $('#save').addEventListener('click', async () => {
+    const c = conn(), problem = needConn(c, true);
+    if (problem) return status(problem, 'error');
+    const btn = $('#save');
+    btn.disabled = true;
+    status('Saving to GitHub…', 'busy');
+    try {
+      const existing = await ghGet(c);
+      const body = {
+        message: 'Update portfolio content',
+        content: toB64(JSON.stringify(clean(), null, 2) + '\n'),
+        branch: c.branch
+      };
+      if (existing) body.sha = existing.sha;
+      const r = await fetch(apiUrl(c), {
+        method: 'PUT', headers: { ...apiHeaders(c), 'Content-Type': 'application/json' }, body: JSON.stringify(body)
+      });
+      if (!r.ok) throw new Error(await apiError(r));
+      saveConn(c);
+      dirty = false;
+      status('Saved. Your site will update in about a minute.', 'ok');
+    } catch (e) {
+      status(e.message || 'Something went wrong while saving.', 'error');
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // ---------- start ----------
+  (async function init() {
+    const saved = loadConn(), guess = guessRepo();
+    $('#owner').value = saved.owner || guess.owner;
+    $('#repo').value = saved.repo || guess.repo;
+    $('#branch').value = saved.branch || 'main';
+    $('#token').value = saved.token || '';
+    $('#remember').checked = !!saved.token;
+
+    try {
+      const r = await fetch('data.json?v=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      data = normalize(await r.json());
+      status('Loaded the current content from your site.', 'ok');
+    } catch (e) {
+      status('Could not load data.json from this page. Start fresh, or use "Reload from GitHub".', 'error');
+    }
+    populate();
+  })();
+})();
+</script>
+</body>
+</html>
